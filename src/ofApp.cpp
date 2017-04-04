@@ -2,10 +2,9 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    streams[0].pitch = 1220.0f;
-    active = 0;
-    streams[active].start();
-    streams[1].start();
+    for (int i = 0; i < kStreamCount; i++) {
+        streams[i].pitch = 220.0f + (i * 1000.0f / kStreamCount);
+    }
 }
 
 //--------------------------------------------------------------
@@ -15,24 +14,34 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+    ofDrawBitmapStringHighlight("A number from 1 to " + ofToString(kStreamCount) + " to play a single stream, a to play all, 0 to stop all.", 10, 10);
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    int old = active;
-    active++;
-    if (active == kStreamCount)
-    {
-        active = 0;
-    }
-    streams[old].stop();
-    streams[active].start();
+
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    if (key >= '1' && key < '1' + kStreamCount)
+    {
+        int index = key - '1';
+        for (int i = 0; i < kStreamCount; i++) {
+            streams[i].stop();
+        }
+        streams[index].start();
+    } else if (key == 'a') {
+        for (int i = 0; i < kStreamCount; i++) {
+            streams[i].start();
+        }
+    }
+    else if (key == '0')
+    {
+        for (int i = 0; i < kStreamCount; i++) {
+            streams[i].stop();
+        }
+    }
 }
 
 //--------------------------------------------------------------
