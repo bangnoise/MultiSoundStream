@@ -10,8 +10,21 @@ public:
     public:
         Output() : pitch(440.0f) {}
         void start() {
+            bool result;
+#if OF_VERSION_MINOR < 10
             stream.setOutput(this);
-            if (!stream.setup(2, 2, 48000, 128, 2))
+            result = stream.setup(2, 2, 48000, 128, 2));
+#else
+            ofSoundStreamSettings settings;
+            settings.setOutListener(this);
+            settings.numOutputChannels = 2;
+            settings.numInputChannels = 2;
+            settings.sampleRate = 48000;
+            settings.bufferSize = 128;
+            settings.numBuffers = 2;
+            result = stream.setup(settings);
+#endif
+            if (!result)
             {
                 ofLogError("error in ofSoundStream::setup()");
             }
@@ -20,10 +33,10 @@ public:
             stream.close();
         }
         float pitch;
-    private:
         void audioOut(ofSoundBuffer& buffer) override {
             buffer.fillWithTone(pitch);
         }
+    private:
         ofSoundStream stream;
     };
 public:
